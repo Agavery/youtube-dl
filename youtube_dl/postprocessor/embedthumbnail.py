@@ -85,8 +85,10 @@ class EmbedThumbnailPP(FFmpegPostProcessor):
             if b'No changes' in stdout:
                 self._downloader.report_warning('The file format doesn\'t support embedding a thumbnail')
             else:
+                filestat = os.lstat(filename)
                 os.remove(encodeFilename(filename))
                 os.rename(encodeFilename(temp_filename), encodeFilename(filename))
+                os.utime(filename, (filestat.st_atime, filestat.st_mtime))
         else:
             raise EmbedThumbnailPPError('Only mp3 and m4a/mp4 are supported for thumbnail embedding for now.')
 
